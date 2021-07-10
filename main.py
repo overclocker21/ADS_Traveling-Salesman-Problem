@@ -1,6 +1,7 @@
 import csv
 from package import Package
 from hash_table import HashMap
+from distance_mapping import distances
 
 filename = 'data/package_file.csv'
 
@@ -70,16 +71,20 @@ def get_all_packages():
 
 
 #print truck load info
-for truck1 in first_truck_load:
-    print(truck1)
+# print('Truck 1 packages:')
+# for truck1 in first_truck_load:
+#     print(truck1)
 
-print('\n')
+# print('\n')
 
-for truck2 in second_truck_load:
-    print(truck2)
+# print('Truck 2 packages:')
+# for truck2 in second_truck_load:
+#     print(truck2)
 
-print('\n')
+# print('\n')
 
-for truck3 in thrid_truck_load:
-    print(truck3)
+# print('Truck 3 packages:')
+# for truck3 in thrid_truck_load:
+#     print(truck3)
 
+print(distances["0"])
