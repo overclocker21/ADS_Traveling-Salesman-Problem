@@ -9,6 +9,9 @@ class Package:
 
     def get_id(self):
         return self.id
+
+    def get_address(self):
+        return self.delivery_address
     
     def __repr__(self):
         return self.id + ', ' + self.delivery_address + ', ' + self.deadline + ', ' + self.weight + ', ' + self.special_notes + ', ' + str(self.delivery_status or '')

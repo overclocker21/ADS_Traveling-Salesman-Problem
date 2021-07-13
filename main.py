@@ -69,6 +69,22 @@ for truck3 in intermediary_sorting:
 def get_all_packages():
         return packages
 
+def get_distance(start, end):
+    all_distances = []
+    with open('data/distance_data.csv', 'r', encoding='utf-8-sig') as csvfile:
+        csvreader = csv.reader(csvfile)
+        for row in csvreader:
+            all_distances.append(row)
+    
+    return all_distances[start][end]
+
+def get_index(address):
+    return distances[address]
+
+#test = get_distance(get_index("1060 Dalton Ave S"),0)
+
+for package in first_truck_load:
+    print(get_distance(get_index(Package.get_address(package)),0))
 
 #print truck load info
 # print('Truck 1 packages:')
@@ -87,4 +103,3 @@ def get_all_packages():
 # for truck3 in thrid_truck_load:
 #     print(truck3)
 
-print(distances["0"])
