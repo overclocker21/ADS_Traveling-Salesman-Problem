@@ -2,6 +2,7 @@ import csv
 from package import Package
 from hash_table import HashMap
 from distance_mapping import distances
+from copy import deepcopy
 
 filename = 'data/package_file.csv'
 
@@ -69,27 +70,53 @@ for truck3 in intermediary_sorting:
 def get_all_packages():
         return packages
 
-def get_distance(start, end):
+#def get_distance(start, end):
+def get_distance():
     all_distances = []
     with open('data/distance_data.csv', 'r', encoding='utf-8-sig') as csvfile:
         csvreader = csv.reader(csvfile)
         for row in csvreader:
             all_distances.append(row)
     
-    return all_distances[start][end]
+    return all_distances
 
 def get_index(address):
     return distances[address]
 
-#test = get_distance(get_index("1060 Dalton Ave S"),0)
+all_dist_from_point = get_distance()
 
-for package in first_truck_load:
-    print(get_distance(get_index(Package.get_address(package)),0))
+def deliver_package(truck, start):
+
+    print('Nearest neighbor start')
+    if len(truck) == 0: return
+
+    lowest = all_dist_from_point[get_index(Package.get_address(truck[0]))][start]
+    
+    next_delivery = Package()
+
+    start = 0
+    
+    for package in truck[:]:
+        if (all_dist_from_point[get_index(Package.get_address(package))][start] < lowest):
+            lowest = all_dist_from_point[get_index(Package.get_address(package))][start]
+            next_delivery = package
+            
+    print("next delivery:", next_delivery)
+    start = get_index(Package.get_address(next_delivery))
+    print("Next start:", start)
+    Package.set_status(next_delivery, 'DELIVERED')
+
+    if next_delivery in truck:
+        truck.remove(next_delivery)
+        
+    return deliver_package(truck, start)
+
+deliver_package(first_truck_load, 0)
 
 #print truck load info
-# print('Truck 1 packages:')
-# for truck1 in first_truck_load:
-#     print(truck1)
+print('Truck 1 packages:')
+for truck1 in first_truck_load:
+    print(truck1)
 
 # print('\n')
 
