@@ -23,7 +23,7 @@ distances = {
     "4580 S 2300 E": 21,
     "5025 State St": 22,
     "5100 South 2700 West": 23,
-    "5383 South 900 East #104": 24,
+    "5383 S 900 East #104": 24,
     "600 E 900 South": 25,
     "6351 South 900 East": 26
 }

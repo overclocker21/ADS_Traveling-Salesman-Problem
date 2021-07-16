@@ -88,36 +88,49 @@ def get_index(address):
 
 all_dist_from_point = get_distance()
 
+#nearest neighbor algorithm(recursive)
 def deliver_package(truck, start):
+
+    #if no packages in the truck, stop deliveries
     if len(truck) == 0: return
 
-    lowest = float(all_dist_from_point[get_index(Package.get_address(truck[0]))][start])
+    #init lowest distance with the distance to the first delivery in the array of addresses
+    lowest_distance = float(all_dist_from_point[get_index(Package.get_address(truck[0]))][start])
 
+    #init Package holder object for next delivery data
     next_delivery = Package()
 
+    #store initial starting point index
     start_next = start
 
-    for package in truck[:]:    
-        if (float(all_dist_from_point[get_index(Package.get_address(package))][start]) <= lowest):
-            lowest = float(all_dist_from_point[get_index(Package.get_address(package))][start])
+    #loop thru packages in truck and determine lowest distance from current start position to each address 
+    # of the remaining packages in the array
+    for package in truck[:]:
+        start_to_address = float(all_dist_from_point[get_index(Package.get_address(package))][start])    
+        if (start_to_address <= lowest_distance):
+            lowest_distance = start_to_address
             next_delivery = package
 
-    #adding mileage to total mileage array
-    total_mileage.append(lowest)
+    #adding travelled mileage to total mileage array
+    total_mileage.append(lowest_distance)
 
+    #getting the index of the next closest delivery
     start_next = get_index(Package.get_address(next_delivery))
     
-    #here can update Hashmap
+    #updating status of package in HashMap
     id = Package.get_id(next_delivery)
     Package.set_status(packages.get(id), 'DELIVERED')
 
+    #unloading delivered package from the truck
     if next_delivery in truck:
         truck.remove(next_delivery)
 
+    #recursively deliver next package with updated starting point
     return deliver_package(truck, start_next)
 
 deliver_package(first_truck_load, 0)
-
+deliver_package(second_truck_load, 0)
+deliver_package(thrid_truck_load, 0)
 
 #Get total travelled mileage
 total = 0.0
