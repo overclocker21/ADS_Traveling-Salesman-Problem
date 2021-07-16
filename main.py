@@ -101,7 +101,7 @@ def deliver_package(truck, start):
     if len(truck) == 0: return
 
     print("Start", start)
-    lowest = all_dist_from_point[get_index(Package.get_address(truck[0]))][start]
+    lowest = float(all_dist_from_point[get_index(Package.get_address(truck[0]))][start])
     print("Address initial:", Package.get_address(truck[0]))
     print("Index initial", get_index(Package.get_address(truck[0])))
     print("LOWEST INITIAL", lowest)
@@ -113,8 +113,8 @@ def deliver_package(truck, start):
     print("============distances===================")
     for package in truck[:]:
         print("Distance: ", all_dist_from_point[get_index(Package.get_address(package))][start], "Index: ", get_index(Package.get_address(package)), "Address: ", Package.get_address(package))
-        if (all_dist_from_point[get_index(Package.get_address(package))][start] <= lowest):
-            lowest = all_dist_from_point[get_index(Package.get_address(package))][start]
+        if (float(all_dist_from_point[get_index(Package.get_address(package))][start]) <= lowest):
+            lowest = float(all_dist_from_point[get_index(Package.get_address(package))][start])
             next_delivery = package
         print("Checking LOWEST in a loop:", lowest)
 
