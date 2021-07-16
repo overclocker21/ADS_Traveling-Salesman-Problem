@@ -85,31 +85,58 @@ def get_index(address):
 
 all_dist_from_point = get_distance()
 
+print('Initial array:')
+for truck1 in first_truck_load:
+    print(truck1)
+
+print("====================")
+print("====================")
+print("====================")
+
+
+
 def deliver_package(truck, start):
 
     print('Nearest neighbor start')
     if len(truck) == 0: return
 
+    print("Start", start)
     lowest = all_dist_from_point[get_index(Package.get_address(truck[0]))][start]
-    
+    print("Address initial:", Package.get_address(truck[0]))
+    print("Index initial", get_index(Package.get_address(truck[0])))
+    print("LOWEST INITIAL", lowest)
+
     next_delivery = Package()
 
-    start = 0
+    start_next = start
     
+    print("============distances===================")
     for package in truck[:]:
-        if (all_dist_from_point[get_index(Package.get_address(package))][start] < lowest):
+        print("Distance: ", all_dist_from_point[get_index(Package.get_address(package))][start], "Index: ", get_index(Package.get_address(package)), "Address: ", Package.get_address(package))
+        if (all_dist_from_point[get_index(Package.get_address(package))][start] <= lowest):
             lowest = all_dist_from_point[get_index(Package.get_address(package))][start]
             next_delivery = package
-            
+        print("Checking LOWEST in a loop:", lowest)
+
+    print("=============distances===================")
+
+    print("lowest of all:", lowest)
     print("next delivery:", next_delivery)
-    start = get_index(Package.get_address(next_delivery))
-    print("Next start:", start)
+    start_next = get_index(Package.get_address(next_delivery))
+    print("Next start:", start_next)
     Package.set_status(next_delivery, 'DELIVERED')
 
     if next_delivery in truck:
         truck.remove(next_delivery)
         
-    return deliver_package(truck, start)
+    print('Array after deletion:')
+    for truck1 in first_truck_load:
+        print(truck1)
+
+    print("====================")
+    print("====================")
+
+    return deliver_package(truck, start_next)
 
 deliver_package(first_truck_load, 0)
 
