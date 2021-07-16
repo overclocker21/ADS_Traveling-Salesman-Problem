@@ -17,4 +17,4 @@ class Package:
         self.delivery_status = status
     
     def __repr__(self):
-        return self.id + ', ' + self.delivery_address + ', ' + self.deadline + ', ' + self.weight + ', ' + self.special_notes + ', ' + str(self.delivery_status or '')
+        return self.delivery_address + ', ' + self.deadline + ', ' + self.weight + ', ' + self.special_notes + ', ' + str(self.delivery_status or '')

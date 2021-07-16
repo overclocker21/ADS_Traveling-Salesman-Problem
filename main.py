@@ -2,7 +2,6 @@ import csv
 from package import Package
 from hash_table import HashMap
 from distance_mapping import distances
-from copy import deepcopy
 
 filename = 'data/package_file.csv'
 
@@ -12,10 +11,17 @@ first_truck_load = []
 #packages for the second truck
 second_truck_load = []
 
-#packages for the third truck
+#packages for intermediatery and the third truck
 intermediary_sorting = []
-
 thrid_truck_load = []
+
+# Times the trucks leave the hub
+first_leave_time = ['8:00:00']
+second_leave_time = ['9:00:00']
+third_leave_time = ['11:00:00']
+
+#total mileage for all trucks
+total_mileage = []
 
 #method to get row count from csv file
 def get_row_count(file):
@@ -58,6 +64,7 @@ with open(filename, 'r', encoding='utf-8-sig') as csvfile:
 
         packages.add(id, newPackage)
 
+#loading fully first and second truck and the rest put in a third
 for truck3 in intermediary_sorting:
     if (len(first_truck_load) < 16):
         first_truck_load.append(truck3)
@@ -65,10 +72,6 @@ for truck3 in intermediary_sorting:
         second_truck_load.append(truck3)
     else:
         thrid_truck_load.append(truck3)
-
-
-def get_all_packages():
-        return packages
 
 #def get_distance(start, end):
 def get_distance():
@@ -85,75 +88,43 @@ def get_index(address):
 
 all_dist_from_point = get_distance()
 
-print('Initial array:')
-for truck1 in first_truck_load:
-    print(truck1)
-
-print("====================")
-print("====================")
-print("====================")
-
-
-
 def deliver_package(truck, start):
-
-    print('Nearest neighbor start')
     if len(truck) == 0: return
 
-    print("Start", start)
     lowest = float(all_dist_from_point[get_index(Package.get_address(truck[0]))][start])
-    print("Address initial:", Package.get_address(truck[0]))
-    print("Index initial", get_index(Package.get_address(truck[0])))
-    print("LOWEST INITIAL", lowest)
 
     next_delivery = Package()
 
     start_next = start
-    
-    print("============distances===================")
-    for package in truck[:]:
-        print("Distance: ", all_dist_from_point[get_index(Package.get_address(package))][start], "Index: ", get_index(Package.get_address(package)), "Address: ", Package.get_address(package))
+
+    for package in truck[:]:    
         if (float(all_dist_from_point[get_index(Package.get_address(package))][start]) <= lowest):
             lowest = float(all_dist_from_point[get_index(Package.get_address(package))][start])
             next_delivery = package
-        print("Checking LOWEST in a loop:", lowest)
 
-    print("=============distances===================")
+    #adding mileage to total mileage array
+    total_mileage.append(lowest)
 
-    print("lowest of all:", lowest)
-    print("next delivery:", next_delivery)
     start_next = get_index(Package.get_address(next_delivery))
-    print("Next start:", start_next)
-    Package.set_status(next_delivery, 'DELIVERED')
+    
+    #here can update Hashmap
+    id = Package.get_id(next_delivery)
+    Package.set_status(packages.get(id), 'DELIVERED')
 
     if next_delivery in truck:
         truck.remove(next_delivery)
-        
-    print('Array after deletion:')
-    for truck1 in first_truck_load:
-        print(truck1)
-
-    print("====================")
-    print("====================")
 
     return deliver_package(truck, start_next)
 
 deliver_package(first_truck_load, 0)
 
-#print truck load info
-print('Truck 1 packages:')
-for truck1 in first_truck_load:
-    print(truck1)
 
-# print('\n')
+#Get total travelled mileage
+total = 0.0
+for mile in total_mileage:
+    total += mile
 
-# print('Truck 2 packages:')
-# for truck2 in second_truck_load:
-#     print(truck2)
+print(total)
 
-# print('\n')
-
-# print('Truck 3 packages:')
-# for truck3 in thrid_truck_load:
-#     print(truck3)
-
+#Print hashmap:
+#packages.print()
