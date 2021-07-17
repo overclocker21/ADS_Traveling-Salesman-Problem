@@ -16,9 +16,9 @@ intermediary_sorting = []
 thrid_truck_load = []
 
 # Times the trucks leave the hub
-first_leave_time = ['8:00:00']
-second_leave_time = ['9:00:00']
-third_leave_time = ['11:00:00']
+first_leave_time = 8.00
+second_leave_time = 9.00
+third_leave_time = 11.00
 
 #total mileage for all trucks
 total_mileage = []
@@ -43,8 +43,9 @@ with open(filename, 'r', encoding='utf-8-sig') as csvfile:
         delivery_time = row[5]
         weight = row[6]
         special_note = row[7]
+        timestamp = None
         delivery_status = None
-        newPackage = Package(id, address, delivery_time, weight, special_note, delivery_status)
+        newPackage = Package(id, address, delivery_time, weight, special_note, timestamp, delivery_status)
 
         if 'Can only be on truck 2' in special_note:
             second_truck_load.append(newPackage)
@@ -73,7 +74,6 @@ for truck3 in intermediary_sorting:
     else:
         thrid_truck_load.append(truck3)
 
-#def get_distance(start, end):
 def get_distance():
     all_distances = []
     with open('data/distance_data.csv', 'r', encoding='utf-8-sig') as csvfile:
@@ -91,7 +91,7 @@ all_dist_from_point = get_distance()
 #nearest neighbor algorithm(recursive)
 def deliver_package(truck, start):
 
-    #if no packages in the truck, stop deliveries
+    #if there are no packages in the truck, stop deliveries
     if len(truck) == 0: return
 
     #init lowest distance with the distance to the first delivery in the array of addresses
@@ -104,7 +104,7 @@ def deliver_package(truck, start):
     start_next = start
 
     #loop thru packages in truck and determine lowest distance from current start position to each address 
-    # of the remaining packages in the array
+    # of the remaining packages in the array and hydrate next_delivery object with relevant data
     for package in truck[:]:
         start_to_address = float(all_dist_from_point[get_index(Package.get_address(package))][start])    
         if (start_to_address <= lowest_distance):
@@ -116,10 +116,16 @@ def deliver_package(truck, start):
 
     #getting the index of the next closest delivery
     start_next = get_index(Package.get_address(next_delivery))
-    
-    #updating status of package in HashMap
-    id = Package.get_id(next_delivery)
-    Package.set_status(packages.get(id), 'DELIVERED')
+
+    #updating status of package in HashMap except when on the way back to HUB
+    if Package.get_address(next_delivery) != "4001 South 700 East":
+        id = Package.get_id(next_delivery)
+        Package.set_status(packages.get(id), 'DELIVERED')
+
+    #if there's a last package in the truck and it is being delivered, add one more stop back to HUB
+    if len(truck) == 1 and Package.get_address(next_delivery) != "4001 South 700 East":
+        hub = Package(delivery_address="4001 South 700 East", timestamp=None, delivery_status=None)
+        truck.append(hub)
 
     #unloading delivered package from the truck
     if next_delivery in truck:
@@ -137,7 +143,7 @@ total = 0.0
 for mile in total_mileage:
     total += mile
 
-print(total)
+print(round(total, 1))
 
-#Print hashmap:
-#packages.print()
+# #Print hashmap:
+# packages.print()

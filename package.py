@@ -1,10 +1,11 @@
 class Package:
-    def __init__(self, id=None, delivery_address=None, deadline=None, weight=None, special_notes=None, delivery_status=None):
+    def __init__(self, id=None, delivery_address=None, deadline=None, weight=None, special_notes=None, timestamp=None, delivery_status=None):
         self.id = id
         self.delivery_address = delivery_address
         self.deadline = deadline
         self.weight = weight
         self.special_notes = special_notes
+        self.timestamp = timestamp
         self.delivery_status = delivery_status
 
     def get_id(self):
@@ -15,6 +16,9 @@ class Package:
 
     def set_status(self, status):
         self.delivery_status = status
+
+    def set_timestamp(self, timestamp):
+        self.timestamp = timestamp
     
     def __repr__(self):
-        return self.delivery_address + ', ' + self.deadline + ', ' + self.weight + ', ' + self.special_notes + ', ' + str(self.delivery_status or '')
+        return self.delivery_address + ', ' + str(self.timestamp or '') + ', ' + str(self.delivery_status or '')
