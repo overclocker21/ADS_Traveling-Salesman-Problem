@@ -2,7 +2,6 @@ import csv
 from package import Package
 from hash_table import HashMap
 from distance_mapping import distances
-import math
 
 
 filename = 'data/package_file.csv'
@@ -45,7 +44,7 @@ with open(filename, 'r', encoding='utf-8-sig') as csvfile:
     csvreader = csv.reader(csvfile, delimiter=',')
 
     for row in csvreader:
-        id = row[0]
+        id = int(row[0])
         address = row[1]
         delivery_time = row[5]
         weight = row[6]
@@ -152,15 +151,68 @@ def deliver_package(truck, start, timestamp):
     return deliver_package(truck, start_next, next_timestamp)
 
 deliver_package(first_truck_load, 0, first_leave_time)
-# deliver_package(second_truck_load, 0, second_leave_time) 
-# deliver_package(thrid_truck_load, 0, third_leave_time)
+deliver_package(second_truck_load, 0, second_leave_time) 
+deliver_package(thrid_truck_load, 0, third_leave_time)
 
 #Get total travelled mileage
 total = 0.0
 for mile in total_mileage:
     total += mile
 
-print("Total miles travelled", round(total, 1))
+#print("Total miles travelled", round(total, 1))
 
 #Print hashmap:
-packages.print()
+#packages.print()
+
+    # This is the display message that is shown when the user runs the program. The interface is accessible from here
+    print('------------------------------')
+    print('WGUPS Routing Program!')
+    print('------------------------------\n')
+    print(f'Route was completed in {round(total, 1)} miles.\n')
+
+    user_input = input("""
+Please select an option below to begin or type 'quit' to quit:
+    1. Get info for all packages at a particular time
+    2. Get info for a single package at a particular time
+    3. Get info for all packages after all deliveries completed
+""")
+
+    while user_input != 'quit':
+        if user_input == '1':
+            input_time = input('Enter a time (HH:MM): ')
+            splitted = input_time.split(':')
+            try:
+                hrs = int(splitted[0])
+                min = int(splitted[1])
+                min_converted_to_decimal = min/60
+                total_time_in_decimal = hrs + min_converted_to_decimal
+            except ValueError:
+                print("Entered value is not an integer")
+                exit()
+    
+            if (hrs < 8 or hrs > 17):
+                print("Outside of business hours, enter time from 8:00 to 17.00")
+                exit()
+
+            for id in range(1,41):
+                if (Package.get_timestamp(packages.get(id)) < total_time_in_decimal):
+                    Package.set_status(packages.get(id), 'DELIVERED')
+                elif (total_time_in_decimal < Package.get_hub_leave_time(packages.get(id))):
+                    Package.set_status(packages.get(id), 'AT HUB')
+                else:
+                    Package.set_status(packages.get(id), 'EN ROUTE')
+                    
+            packages.print()
+            exit()
+        elif user_input == '2':
+            print('info for a single package at a particular time')
+            exit()
+        elif user_input == '3':
+            print('info for all packages after all deliveries completed')
+            packages.print()
+            exit()
+        elif user_input == 'quit':
+            exit()
+        else:
+            print('Invalid entry')
+            exit()

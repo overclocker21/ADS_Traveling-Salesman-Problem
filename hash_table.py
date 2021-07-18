@@ -57,6 +57,8 @@ class HashMap:
             if item is not None:
                 print(str(item))
 
+    def getMap(self):
+        return self.map
 
 # h = HashMap(4)
 

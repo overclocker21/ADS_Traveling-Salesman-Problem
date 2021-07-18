@@ -21,6 +21,9 @@ class Package:
     def set_timestamp(self, timestamp):
         self.timestamp = timestamp
 
+    def get_timestamp(self):
+        return self.timestamp
+
     def format_time(self, timestamp):
         if timestamp != None:
             hours = math.floor(timestamp)
