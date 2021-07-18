@@ -2,6 +2,8 @@ import csv
 from package import Package
 from hash_table import HashMap
 from distance_mapping import distances
+import math
+
 
 filename = 'data/package_file.csv'
 
@@ -17,11 +19,16 @@ thrid_truck_load = []
 
 # Times the trucks leave the hub
 first_leave_time = 8.00
-second_leave_time = 9.00
+second_leave_time = 9.10
 third_leave_time = 11.00
 
 #total mileage for all trucks
 total_mileage = []
+
+#total times for deliveries
+first_total_time = []
+second_total_time = []
+third_total_time = []
 
 #method to get row count from csv file
 def get_row_count(file):
@@ -89,7 +96,7 @@ def get_index(address):
 all_dist_from_point = get_distance()
 
 #nearest neighbor algorithm(recursive)
-def deliver_package(truck, start):
+def deliver_package(truck, start, timestamp):
 
     #if there are no packages in the truck, stop deliveries
     if len(truck) == 0: return
@@ -103,6 +110,9 @@ def deliver_package(truck, start):
     #store initial starting point index
     start_next = start
 
+    #store initial timestamp
+    next_timestamp = timestamp
+
     #loop thru packages in truck and determine lowest distance from current start position to each address 
     # of the remaining packages in the array and hydrate next_delivery object with relevant data
     for package in truck[:]:
@@ -114,13 +124,20 @@ def deliver_package(truck, start):
     #adding travelled mileage to total mileage array
     total_mileage.append(lowest_distance)
 
+    #getting id of selected delivery
+    id = Package.get_id(next_delivery)
+
+    #calculating time it took to deliver the package in current iteration
+    next_timestamp += lowest_distance/18
+    #print(str(math.floor(timestamp)) + ':' + str(math.floor(round(timestamp - math.floor(timestamp),2)*60)))
+
     #getting the index of the next closest delivery
     start_next = get_index(Package.get_address(next_delivery))
 
     #updating status of package in HashMap except when on the way back to HUB
     if Package.get_address(next_delivery) != "4001 South 700 East":
-        id = Package.get_id(next_delivery)
         Package.set_status(packages.get(id), 'DELIVERED')
+        Package.set_timestamp(packages.get(id), round(next_timestamp, 2))
 
     #if there's a last package in the truck and it is being delivered, add one more stop back to HUB
     if len(truck) == 1 and Package.get_address(next_delivery) != "4001 South 700 East":
@@ -132,18 +149,18 @@ def deliver_package(truck, start):
         truck.remove(next_delivery)
 
     #recursively deliver next package with updated starting point
-    return deliver_package(truck, start_next)
+    return deliver_package(truck, start_next, next_timestamp)
 
-deliver_package(first_truck_load, 0)
-deliver_package(second_truck_load, 0)
-deliver_package(thrid_truck_load, 0)
+deliver_package(first_truck_load, 0, first_leave_time)
+# deliver_package(second_truck_load, 0, second_leave_time) 
+# deliver_package(thrid_truck_load, 0, third_leave_time)
 
 #Get total travelled mileage
 total = 0.0
 for mile in total_mileage:
     total += mile
 
-print(round(total, 1))
+print("Total miles travelled", round(total, 1))
 
-# #Print hashmap:
-# packages.print()
+#Print hashmap:
+packages.print()
