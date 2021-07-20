@@ -24,11 +24,6 @@ third_leave_time = 11.00
 #total mileage for all trucks
 total_mileage = []
 
-#total times for deliveries
-first_total_time = []
-second_total_time = []
-third_total_time = []
-
 #method to get row count from csv file
 def get_row_count(file):
     with open(file, 'r', encoding='utf-8-sig') as csvfile:
@@ -37,6 +32,7 @@ def get_row_count(file):
 
 #get row number
 row_num = get_row_count(filename)
+print(row_num)
 
 packages = HashMap(row_num)
 
@@ -49,6 +45,7 @@ with open(filename, 'r', encoding='utf-8-sig') as csvfile:
         delivery_time = row[5]
         weight = row[6]
         special_note = row[7]
+        hub_leave_time = None
         timestamp = None
         delivery_status = None
         newPackage = Package(id, address, delivery_time, weight, special_note, timestamp, delivery_status)
@@ -80,6 +77,8 @@ for truck3 in intermediary_sorting:
     else:
         thrid_truck_load.append(truck3)
 
+
+#O(n)
 def get_distance():
     all_distances = []
     with open('data/distance_data.csv', 'r', encoding='utf-8-sig') as csvfile:
@@ -89,12 +88,25 @@ def get_distance():
     
     return all_distances
 
+#O(1)
 def get_index(address):
     return distances[address]
 
 all_dist_from_point = get_distance()
 
+#add hub leave times for truck1
+for package in first_truck_load:
+    Package.set_hub_leave_time(package, first_leave_time)
+
+for package in second_truck_load:
+    Package.set_hub_leave_time(package, second_leave_time)
+
+for package in thrid_truck_load:
+    Package.set_hub_leave_time(package, third_leave_time)
+
+
 #nearest neighbor algorithm(recursive)
+#O(n)
 def deliver_package(truck, start, timestamp):
 
     #if there are no packages in the truck, stop deliveries
@@ -114,6 +126,8 @@ def deliver_package(truck, start, timestamp):
 
     #loop thru packages in truck and determine lowest distance from current start position to each address 
     # of the remaining packages in the array and hydrate next_delivery object with relevant data
+
+    #O(n)
     for package in truck[:]:
         start_to_address = float(all_dist_from_point[get_index(Package.get_address(package))][start])    
         if (start_to_address <= lowest_distance):
@@ -159,60 +173,61 @@ total = 0.0
 for mile in total_mileage:
     total += mile
 
-#print("Total miles travelled", round(total, 1))
-
 #Print hashmap:
 #packages.print()
 
-    # This is the display message that is shown when the user runs the program. The interface is accessible from here
-    print('------------------------------')
-    print('WGUPS Routing Program!')
-    print('------------------------------\n')
-    print(f'Route was completed in {round(total, 1)} miles.\n')
-
-    user_input = input("""
+# This is the display message that is shown when the user runs the program. The interface is accessible from here
+user_input = input("""
 Please select an option below to begin or type 'quit' to quit:
-    1. Get info for all packages at a particular time
-    2. Get info for a single package at a particular time
-    3. Get info for all packages after all deliveries completed
+1. Get info for all packages at a particular time
+2. Get info for all packages after all deliveries completed
 """)
 
-    while user_input != 'quit':
-        if user_input == '1':
-            input_time = input('Enter a time (HH:MM): ')
-            splitted = input_time.split(':')
-            try:
-                hrs = int(splitted[0])
-                min = int(splitted[1])
-                min_converted_to_decimal = min/60
-                total_time_in_decimal = hrs + min_converted_to_decimal
-            except ValueError:
-                print("Entered value is not an integer")
-                exit()
-    
-            if (hrs < 8 or hrs > 17):
-                print("Outside of business hours, enter time from 8:00 to 17.00")
-                exit()
+while user_input != 'quit':
+    if user_input == '1':
+        input_time = input('Enter a time (HH:MM): ')
+        print("=========================================")
+        splitted = input_time.split(':')
+        try:
+            hrs = int(splitted[0])
+            min = int(splitted[1])
+            min_converted_to_decimal = min/60
+            total_time_in_decimal = hrs + min_converted_to_decimal
+        except ValueError:
+            print("Entered value is not an integer")
+            exit()
 
-            for id in range(1,41):
-                if (Package.get_timestamp(packages.get(id)) < total_time_in_decimal):
-                    Package.set_status(packages.get(id), 'DELIVERED')
-                elif (total_time_in_decimal < Package.get_hub_leave_time(packages.get(id))):
-                    Package.set_status(packages.get(id), 'AT HUB')
-                else:
-                    Package.set_status(packages.get(id), 'EN ROUTE')
-                    
-            packages.print()
+        if (hrs < 8 or hrs > 17):
+            print("Outside of business hours, enter time from 8:00 to 17.00")
             exit()
-        elif user_input == '2':
-            print('info for a single package at a particular time')
-            exit()
-        elif user_input == '3':
-            print('info for all packages after all deliveries completed')
-            packages.print()
-            exit()
-        elif user_input == 'quit':
-            exit()
-        else:
-            print('Invalid entry')
-            exit()
+
+        print('Status for specific timestamp:')
+        print("=========================================")
+        for id in range(1,41):
+            if (Package.get_timestamp(packages.get(id)) < total_time_in_decimal):
+                Package.set_status(packages.get(id), 'DELIVERED')
+            elif (total_time_in_decimal < Package.get_hub_leave_time(packages.get(id))):
+                Package.set_status(packages.get(id), 'AT HUB')
+            else:
+                Package.set_status(packages.get(id), 'EN ROUTE')
+                
+            print("ID:" + str(id), packages.get(id))
+
+        print("=========================================")
+        print(f'Route was completed in {round(total, 1)} miles.\n')
+        exit()
+    elif user_input == '2':
+
+        print('Status for all packages after all deliveries have been completed')
+        print("=========================================")
+        for id in range(1,41):
+            print("ID:" + str(id), packages.get(id))
+        
+        print("=========================================")
+        print(f'Route was completed in {round(total, 1)} miles.\n')
+        exit()
+    elif user_input == 'quit':
+        exit()
+    else:
+        print('Invalid entry')
+        exit()
