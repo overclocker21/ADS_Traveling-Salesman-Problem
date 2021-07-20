@@ -1,4 +1,4 @@
-distances = {
+address_to_index_mapper = {
     "4001 South 700 East": 0,
     "1060 Dalton Ave S": 1,
     "1330 2100 S": 2,

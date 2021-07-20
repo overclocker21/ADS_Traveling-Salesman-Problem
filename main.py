@@ -1,7 +1,7 @@
 import csv
 from package import Package
 from hash_table import HashMap
-from distance_mapping import distances
+from address_mapper import address_to_index_mapper
 
 
 filename = 'data/package_file.csv'
@@ -32,8 +32,8 @@ def get_row_count(file):
 
 #get row number
 row_num = get_row_count(filename)
-print(row_num)
 
+#instantiate HashMap with specified row numbers(num of packages)
 packages = HashMap(row_num)
 
 with open(filename, 'r', encoding='utf-8-sig') as csvfile:
@@ -69,13 +69,14 @@ with open(filename, 'r', encoding='utf-8-sig') as csvfile:
         packages.add(id, newPackage)
 
 #loading fully first and second truck and the rest put in a third
-for truck3 in intermediary_sorting:
+for unassigned_package in intermediary_sorting:
     if (len(first_truck_load) < 16):
-        first_truck_load.append(truck3)
-    elif (len(second_truck_load) < 16) and (Package.get_id(truck3) != '9'):
-        second_truck_load.append(truck3)
+        first_truck_load.append(unassigned_package)
+    #filtering out package with the wrong address and later loading it on truck 3 because it leaves after address is corrected
+    elif (len(second_truck_load) < 16) and (Package.get_id(unassigned_package) != '9'):
+        second_truck_load.append(unassigned_package)
     else:
-        thrid_truck_load.append(truck3)
+        thrid_truck_load.append(unassigned_package)
 
 
 #O(n)
@@ -90,11 +91,11 @@ def get_distance():
 
 #O(1)
 def get_index(address):
-    return distances[address]
+    return address_to_index_mapper[address]
 
 all_dist_from_point = get_distance()
 
-#add hub leave times for truck1
+#add hub leave times for truck 1, truck 2 and truck 3
 for package in first_truck_load:
     Package.set_hub_leave_time(package, first_leave_time)
 
@@ -105,8 +106,8 @@ for package in thrid_truck_load:
     Package.set_hub_leave_time(package, third_leave_time)
 
 
-#nearest neighbor algorithm(recursive)
-#O(n)
+#Nearest neighbor algorithm(recursive)
+#Time complexity: O(n)
 def deliver_package(truck, start, timestamp):
 
     #if there are no packages in the truck, stop deliveries
@@ -127,7 +128,7 @@ def deliver_package(truck, start, timestamp):
     #loop thru packages in truck and determine lowest distance from current start position to each address 
     # of the remaining packages in the array and hydrate next_delivery object with relevant data
 
-    #O(n)
+    #Time complexity: O(n)
     for package in truck[:]:
         start_to_address = float(all_dist_from_point[get_index(Package.get_address(package))][start])    
         if (start_to_address <= lowest_distance):
@@ -142,7 +143,6 @@ def deliver_package(truck, start, timestamp):
 
     #calculating time it took to deliver the package in current iteration
     next_timestamp += lowest_distance/18
-    #print(str(math.floor(timestamp)) + ':' + str(math.floor(round(timestamp - math.floor(timestamp),2)*60)))
 
     #getting the index of the next closest delivery
     start_next = get_index(Package.get_address(next_delivery))
@@ -164,6 +164,7 @@ def deliver_package(truck, start, timestamp):
     #recursively deliver next package with updated starting point
     return deliver_package(truck, start_next, next_timestamp)
 
+#apply algorithm for all trucks and deliver packages
 deliver_package(first_truck_load, 0, first_leave_time)
 deliver_package(second_truck_load, 0, second_leave_time) 
 deliver_package(thrid_truck_load, 0, third_leave_time)
@@ -173,40 +174,38 @@ total = 0.0
 for mile in total_mileage:
     total += mile
 
-#Print hashmap:
-#packages.print()
-
 # This is the display message that is shown when the user runs the program. The interface is accessible from here
 user_input = input("""
-Please select an option below to begin or type 'quit' to quit:
+Please select one of the following options or type 'quit' to quit:
 1. Get info for all packages at a particular time
 2. Get info for all packages after all deliveries completed
 """)
 
 while user_input != 'quit':
     if user_input == '1':
-        input_time = input('Enter a time (HH:MM): ')
+        input_time = input('Enter a time (HH:mm): ')
         print("=========================================")
         splitted = input_time.split(':')
         try:
             hrs = int(splitted[0])
             min = int(splitted[1])
             min_converted_to_decimal = min/60
-            total_time_in_decimal = hrs + min_converted_to_decimal
+            user_entered_time = hrs + min_converted_to_decimal
         except ValueError:
             print("Entered value is not an integer")
             exit()
 
         if (hrs < 8 or hrs > 17):
-            print("Outside of business hours, enter time from 8:00 to 17.00")
+            print("Outside of business hours, enter time from 8:00 to 17:00")
             exit()
 
         print('Status for specific timestamp:')
         print("=========================================")
-        for id in range(1,41):
-            if (Package.get_timestamp(packages.get(id)) < total_time_in_decimal):
+
+        for id in range(1,row_num+1):
+            if (Package.get_timestamp(packages.get(id)) < user_entered_time):
                 Package.set_status(packages.get(id), 'DELIVERED')
-            elif (total_time_in_decimal < Package.get_hub_leave_time(packages.get(id))):
+            elif (user_entered_time < Package.get_hub_leave_time(packages.get(id))):
                 Package.set_status(packages.get(id), 'AT HUB')
             else:
                 Package.set_status(packages.get(id), 'EN ROUTE')
@@ -220,7 +219,8 @@ while user_input != 'quit':
 
         print('Status for all packages after all deliveries have been completed')
         print("=========================================")
-        for id in range(1,41):
+
+        for id in range(1,row_num+1):
             print("ID:" + str(id), packages.get(id))
         
         print("=========================================")
