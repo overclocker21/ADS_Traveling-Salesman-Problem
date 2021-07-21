@@ -9,11 +9,11 @@ first_truck_load = []
 #initialize package array for the second truck
 second_truck_load = []
 
-#initialize package array for intermediary the third truck
-intermediary_sorting = []
-
 #initialize package array for the third truck
 thrid_truck_load = []
+
+#initialize package array for intermediary package bin after initial sorting
+intermediary_sorting = []
 
 #times when trucks leave the hub
 first_leave_time = 8.00
