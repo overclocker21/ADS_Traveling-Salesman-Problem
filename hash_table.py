@@ -2,7 +2,7 @@
 # O(1) for add, get, delete
 
 # Array is used to store the data under the hood
-# Implementation from Joe James: https://www.youtube.com/watch?v=9HFbhPscPU0
+# Implementation is based on Joe James' video: https://www.youtube.com/watch?v=9HFbhPscPU0
 
 class HashMap:
     def __init__(self, size):

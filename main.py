@@ -1,42 +1,39 @@
 import csv
 from package import Package
 from hash_table import HashMap
-from address_mapper import address_to_index_mapper
+from util import get_package_count, get_distance, get_index
 
-
-filename = 'data/package_file.csv'
-
-#packages for the first truck
+#initialize package array for the first truck
 first_truck_load = []
 
-#packages for the second truck
+#initialize package array for the second truck
 second_truck_load = []
 
-#packages for intermediatery and the third truck
+#initialize package array for intermediary the third truck
 intermediary_sorting = []
+
+#initialize package array for the third truck
 thrid_truck_load = []
 
-# Times the trucks leave the hub
+#times when trucks leave the hub
 first_leave_time = 8.00
 second_leave_time = 9.10
 third_leave_time = 11.00
 
-#total mileage for all trucks
+#initialize total mileage for all trucks
 total_mileage = []
 
-#method to get row count from csv file
-def get_row_count(file):
-    with open(file, 'r', encoding='utf-8-sig') as csvfile:
-        csvreader = csv.reader(csvfile)
-        return sum(1 for row in csvreader)
-
-#get row number
-row_num = get_row_count(filename)
+#get number of packages based on supplied csv file with packages data
+row_num = get_package_count()
 
 #instantiate HashMap with specified row numbers(num of packages)
 packages = HashMap(row_num)
 
-with open(filename, 'r', encoding='utf-8-sig') as csvfile:
+#retrieve two-dimensional array of distances between stops
+all_dist_from_point = get_distance()
+
+#parse package csv data, create package object for each row and do initial sorting/truck loading
+with open('data/package_file.csv', 'r', encoding='utf-8-sig') as csvfile:
     csvreader = csv.reader(csvfile, delimiter=',')
 
     for row in csvreader:
@@ -68,7 +65,7 @@ with open(filename, 'r', encoding='utf-8-sig') as csvfile:
 
         packages.add(id, newPackage)
 
-#loading fully first and second truck and the rest put in a third
+#fully loading first and second truck and the rest of packages put in a third truck
 for unassigned_package in intermediary_sorting:
     if (len(first_truck_load) < 16):
         first_truck_load.append(unassigned_package)
@@ -77,23 +74,6 @@ for unassigned_package in intermediary_sorting:
         second_truck_load.append(unassigned_package)
     else:
         thrid_truck_load.append(unassigned_package)
-
-
-#O(n)
-def get_distance():
-    all_distances = []
-    with open('data/distance_data.csv', 'r', encoding='utf-8-sig') as csvfile:
-        csvreader = csv.reader(csvfile)
-        for row in csvreader:
-            all_distances.append(row)
-    
-    return all_distances
-
-#O(1)
-def get_index(address):
-    return address_to_index_mapper[address]
-
-all_dist_from_point = get_distance()
 
 #add hub leave times for truck 1, truck 2 and truck 3
 for package in first_truck_load:
@@ -174,7 +154,7 @@ total = 0.0
 for mile in total_mileage:
     total += mile
 
-# This is the display message that is shown when the user runs the program. The interface is accessible from here
+#Starting user interface here
 user_input = input("""
 Please select one of the following options or type 'quit' to quit:
 1. Get info for all packages at a particular time
