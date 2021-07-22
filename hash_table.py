@@ -1,13 +1,7 @@
-# In HashMap key is usually int or string but value can be anything.
-# O(1) for add, get, delete
-
-# Array is used to store the data under the hood
 # Implementation is based on Joe James' video: https://www.youtube.com/watch?v=9HFbhPscPU0
-
 class HashMap:
     def __init__(self, size):
         self.size = size
-        #init array with name map
         self.map = [None] * size
 
     def _get_hash(self, key):
@@ -59,14 +53,3 @@ class HashMap:
 
     def getMap(self):
         return self.map
-
-# h = HashMap(4)
-
-# h.add('Bob', 'Stone')
-# h.add('Pratik', 'Kurtik')
-
-# h.print()
-
-# h.delete('Pratik')
-
-# h.print()

@@ -31,7 +31,7 @@ class Package:
     def get_timestamp(self):
         return self.timestamp
 
-    def format_time(self, timestamp):
+    def convert_float_to_time(self, timestamp):
         if timestamp != None:
             hours = math.floor(timestamp)
             minutes = math.floor(round(timestamp - math.floor(timestamp),2)*60)
@@ -43,7 +43,7 @@ class Package:
         if (self.delivery_status != 'DELIVERED'):
             return 'Timestamp not available yet' or ''
         
-        return "Timestamp: " + str(self.format_time(self.timestamp)) or ''
+        return "Timestamp: " + str(self.convert_float_to_time(self.timestamp)) or ''
 
     def __repr__(self):
-        return '\t| Address: ' + f'{self.delivery_address:<40s}' + '| ' + f'{self.format_timestamp():<30s}' + ' ' + '\t| Status: ' + str(self.delivery_status or '')
+        return '\t| Address: ' + f'{self.delivery_address:<40s}' + '| ' + f'{self.format_timestamp():<30s}' + ' ' + '\t| Status: ' + str(self.delivery_status) or ''
