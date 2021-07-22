@@ -91,6 +91,15 @@ for package in second_truck_load:
 for package in thrid_truck_load:
     Package.set_hub_leave_time(package, third_leave_time)
 
+# adding assigned truck info for all packages in corresponding load
+for package in first_truck_load:
+    Package.set_truck(package, "Truck 1")
+
+for package in second_truck_load:
+    Package.set_truck(package, "Truck 2")
+
+for package in thrid_truck_load:
+    Package.set_truck(package, "Truck 3")
 
 # Nearest Neighbor Algorithm(recursive)
 # space-time complexity: O(N2)

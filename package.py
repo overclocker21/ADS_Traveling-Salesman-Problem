@@ -1,6 +1,6 @@
 import math
 class Package:
-    def __init__(self, id=None, delivery_address=None, deadline=None, weight=None, special_notes=None, hub_leave_time=None, timestamp=None, delivery_status=None):
+    def __init__(self, id=None, delivery_address=None, deadline=None, weight=None, special_notes=None, hub_leave_time=None, timestamp=None, truck=None, delivery_status=None):
         self.id = id
         self.delivery_address = delivery_address
         self.deadline = deadline
@@ -8,6 +8,7 @@ class Package:
         self.special_notes = special_notes
         self.hub_leave_time = hub_leave_time
         self.timestamp = timestamp
+        self.truck = truck
         self.delivery_status = delivery_status
 
     def get_id(self):
@@ -31,6 +32,12 @@ class Package:
     def get_timestamp(self):
         return self.timestamp
 
+    def set_truck(self, truck):
+        self.truck = truck
+
+    def get_truck(self):
+        return self.truck
+
     def convert_float_to_time(self, timestamp):
         if timestamp != None:
             hours = math.floor(timestamp)
@@ -46,4 +53,4 @@ class Package:
         return "Timestamp: " + str(self.convert_float_to_time(self.timestamp)) or ''
 
     def __repr__(self):
-        return '\t| Address: ' + f'{self.delivery_address:<40s}' + '| ' + f'{self.format_timestamp():<30s}' + ' ' + '\t| Status: ' + str(self.delivery_status) or ''
+        return '\t| On truck: ' + self.truck + '\t| Address: ' + f'{self.delivery_address:<40s}' + '| ' + f'{self.format_timestamp():<30s}' + ' ' + '\t| Status: ' + str(self.delivery_status) or ''
