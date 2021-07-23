@@ -1,4 +1,4 @@
-# 
+#
 # Student ID: 001331960
 
 import csv
@@ -20,7 +20,7 @@ intermediary_sorting = []
 
 # times when trucks leave the hub
 first_leave_time = 8.00
-second_leave_time = 9.10
+second_leave_time = 9.05
 third_leave_time = 11.00
 
 # initialize total mileage for all trucks
@@ -130,6 +130,13 @@ def deliver_package(truck, start, timestamp):
         if (start_to_address <= lowest_distance):
             lowest_distance = start_to_address
             next_delivery = package
+
+    #when leaving HUB prioritize packages that have certain deadlines:
+    if (start == 0):
+        for package in truck[:]:
+            if (Package.get_address(package) == '5383 S 900 East #104' and (Package.get_deadline(package)) == '10:30'):
+                lowest_distance = float(all_dist_from_point[get_index(Package.get_address(package))][start])
+                next_delivery = package
 
     # adding travelled mileage to total mileage array
     total_mileage.append(lowest_distance)

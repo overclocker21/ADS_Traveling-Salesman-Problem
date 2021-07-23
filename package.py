@@ -14,6 +14,9 @@ class Package:
     def get_id(self):
         return self.id
 
+    def get_deadline(self):
+        return self.deadline
+
     def get_address(self):
         return self.delivery_address
 
