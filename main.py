@@ -81,25 +81,18 @@ for unassigned_package in intermediary_sorting:
     else:
         thrid_truck_load.append(unassigned_package)
 
-# add hub leave times for truck 1, truck 2 and truck 3
+# adding assigned truck info and hub leave times for all packages in corresponding load
 for package in first_truck_load:
+    Package.set_truck(package, "Truck 1")
     Package.set_hub_leave_time(package, first_leave_time)
 
 for package in second_truck_load:
+    Package.set_truck(package, "Truck 2")
     Package.set_hub_leave_time(package, second_leave_time)
 
 for package in thrid_truck_load:
-    Package.set_hub_leave_time(package, third_leave_time)
-
-# adding assigned truck info for all packages in corresponding load
-for package in first_truck_load:
-    Package.set_truck(package, "Truck 1")
-
-for package in second_truck_load:
-    Package.set_truck(package, "Truck 2")
-
-for package in thrid_truck_load:
     Package.set_truck(package, "Truck 3")
+    Package.set_hub_leave_time(package, third_leave_time)
 
 # Nearest Neighbor Algorithm(recursive)
 # space-time complexity: O(N2)
